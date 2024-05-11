@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -26,6 +28,10 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText RPassword;
     private TextInputEditText REmail;
    TextInputEditText RName;
+
+
+
+
 
 
     @SuppressLint("MissingInflatedId")
@@ -74,9 +80,8 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull Call<RegisterResponseModel> call, @NonNull Response<RegisterResponseModel> response) {
 
-
-                        assert response.body() != null;
-                        if(response.body().success){
+                    assert response.body() != null;
+                    if(response.body().success){
                             Toast.makeText(RegisterActivity.this, response.body().msg, Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(RegisterActivity.this, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
