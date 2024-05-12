@@ -28,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText RPassword;
     private TextInputEditText REmail;
    TextInputEditText RName;
+   ProgressBar progressBar;
 
 
 
@@ -43,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         RPassword=findViewById(R.id.RPassword);
         REmail=findViewById(R.id.REmail);
         RName = findViewById(R.id.RName);
+        progressBar=findViewById(R.id.RProgressBar);
 
         Button btnSignup = findViewById(R.id.btnSignup);
         btnSignup.setOnClickListener(v -> {
@@ -51,6 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
     public void RegisterUser(){
+        progressBar.setVisibility(View.VISIBLE);
         String UserPassword= Objects.requireNonNull(RPassword.getText()).toString();
         String UserEmail= Objects.requireNonNull(REmail.getText()).toString();
         String UserName= Objects.requireNonNull(RName.getText()).toString();
@@ -82,8 +85,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                     assert response.body() != null;
                     if(response.body().success){
+                           progressBar.setVisibility(View.GONE);
                             Toast.makeText(RegisterActivity.this, response.body().msg, Toast.LENGTH_SHORT).show();
                         } else {
+                        progressBar.setVisibility(View.GONE);
                             Toast.makeText(RegisterActivity.this, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
 
                         }
@@ -91,6 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<RegisterResponseModel> call, @NonNull Throwable throwable) {
+                    progressBar.setVisibility(View.GONE);
                     Log.e("RegisterActivity", "Registration failed", throwable);
                     if (throwable instanceof IOException) {
                         // This is a network error, handle accordingly
