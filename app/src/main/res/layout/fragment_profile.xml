@@ -23,6 +23,7 @@ android:layout_marginBottom="50dp" />
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:id="@+id/UProfile"
         android:src="@drawable/ic_launcher_background"/>
 
     <ImageView
@@ -38,7 +39,8 @@ android:layout_marginBottom="50dp" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Rishav Raj"
+        android:text="Name"
+        android:id="@+id/UName"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -46,6 +48,7 @@ android:layout_marginBottom="50dp" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/UEmail"
         android:text="Email Id"
         android:textSize="20sp"
         android:textStyle="bold"
