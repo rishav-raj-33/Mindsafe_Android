@@ -1,7 +1,7 @@
 package com.example.mindsafe.responseModels;
 
 
-public class RegisterResponseModel {
+public class APIResponseModel {
 
 
 
@@ -9,10 +9,10 @@ public class RegisterResponseModel {
     public boolean success;
 
 
-    public RegisterResponseModel() {
+    public APIResponseModel() {
     }
 
-    public RegisterResponseModel(String msg, boolean success) {
+    public APIResponseModel(String msg, boolean success) {
         this.msg = msg;
         this.success = success;
     }

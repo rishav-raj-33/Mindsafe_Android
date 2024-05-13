@@ -2,8 +2,11 @@ package com.example.mindsafe.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,10 +16,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.mindsafe.R;
-import com.example.mindsafe.RetrofitClients.RegisterRetrofit;
+import com.example.mindsafe.RetrofitClients.PublicRetrofit;
+import com.example.mindsafe.helper.GetJwt;
 import com.example.mindsafe.requestModel.LoginRequestModel;
 import com.example.mindsafe.responseModels.LoginResponseModel;
-import com.example.mindsafe.responseModels.RegisterResponseModel;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
@@ -30,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
     TextView txt_create_account, ForgotPassword;
     TextInputEditText LEmail, LPassword;
 
+    ProgressBar progressBar;
+    Intent iHome = new Intent(this, MainActivity.class);
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -42,6 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         LPassword = findViewById(R.id.LPassword);
         ForgotPassword = findViewById(R.id.ForgotPassword);
         txt_create_account = findViewById(R.id.txt_create_account);
+        progressBar=findViewById(R.id.RProgressBar);
+        userExist();
         btnLogin.setOnClickListener(v -> {
             login();
 
@@ -54,27 +61,36 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+
+
     public void login() {
+        progressBar.setVisibility(View.VISIBLE);
         String lemail = Objects.requireNonNull(LEmail.getText()).toString();
         String lpassword = Objects.requireNonNull(LPassword.getText()).toString();
         if (lemail.isEmpty() || lpassword.isEmpty()) {
             LEmail.setError("Email and Password is required");
             LEmail.requestFocus();
-            return;
-        }
-        else {
-            LoginRequestModel model=new LoginRequestModel(lemail,lpassword);
-            Call<LoginResponseModel> call = RegisterRetrofit.getInstance().getApi().Login(model);
+
+        } else {
+            LoginRequestModel model = new LoginRequestModel(lemail, lpassword);
+            Call<LoginResponseModel> call = PublicRetrofit.getInstance().getApi().Login(model);
             call.enqueue(new Callback<LoginResponseModel>() {
                 @Override
                 public void onResponse(@NonNull Call<LoginResponseModel> call, @NonNull Response<LoginResponseModel> response) {
-
-
                     assert response.body() != null;
-                    //TODO: Add JWT Token in Shared Preference
-                    if(0==0){
-                        Toast.makeText(LoginActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                    if (response.body().success) {
+                        progressBar.setVisibility(View.GONE);
+                        SharedPreferences sp = getSharedPreferences("token", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString("jwt", response.body().jwtToken);
+                        editor.putString("timeLimit",response.body().expireDateTime.toString());
+                        editor.commit();
+                        editor.apply();
+                        GetJwt getJwt=new GetJwt(sp);
+                        startActivity(iHome);
+                        finish();
                     } else {
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(LoginActivity.this, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
 
                     }
@@ -82,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<LoginResponseModel> call, @NonNull Throwable throwable) {
+                    progressBar.setVisibility(View.GONE);
                     Log.e("RegisterActivity", "Login failed", throwable);
                     if (throwable instanceof IOException) {
                         // This is a network error, handle accordingly
@@ -89,13 +106,23 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         // This is a non-network error, handle accordingly
                         Toast.makeText(LoginActivity.this, "Login failed: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    }}
+                    }
+                }
             });
 
 
-            Intent iHome = new Intent(this, MainActivity.class);
-            startActivity(iHome);
+
         }
 
     }
+    private void userExist() {
+        SharedPreferences sp=getSharedPreferences("token",MODE_PRIVATE);
+        if(sp.contains("jwt")){
+            startActivity(iHome);
+        }
+    }
+
+
+
+
 }

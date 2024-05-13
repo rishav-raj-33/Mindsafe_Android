@@ -11,9 +11,9 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.mindsafe.responseModels.RegisterResponseModel;
+import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.R;
-import com.example.mindsafe.RetrofitClients.RegisterRetrofit;
+import com.example.mindsafe.RetrofitClients.PublicRetrofit;
 import com.example.mindsafe.requestModel.RegisterRequestModel;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -78,10 +78,10 @@ public class RegisterActivity extends AppCompatActivity {
         }
         else {
 
-            Call<RegisterResponseModel> call = RegisterRetrofit.getInstance().getApi().Register(model);
-            call.enqueue(new Callback<RegisterResponseModel>() {
+            Call<APIResponseModel> call = PublicRetrofit.getInstance().getApi().Register(model);
+            call.enqueue(new Callback<APIResponseModel>() {
                 @Override
-                public void onResponse(@NonNull Call<RegisterResponseModel> call, @NonNull Response<RegisterResponseModel> response) {
+                public void onResponse(@NonNull Call<APIResponseModel> call, @NonNull Response<APIResponseModel> response) {
 
                     assert response.body() != null;
                     if(response.body().success){
@@ -95,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<RegisterResponseModel> call, @NonNull Throwable throwable) {
+                public void onFailure(@NonNull Call<APIResponseModel> call, @NonNull Throwable throwable) {
                     progressBar.setVisibility(View.GONE);
                     Log.e("RegisterActivity", "Registration failed", throwable);
                     if (throwable instanceof IOException) {

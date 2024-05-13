@@ -4,6 +4,9 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import android.app.Dialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +20,11 @@ import androidx.fragment.app.Fragment;
 import com.example.mindsafe.Fragments.HomeFragment;
 import com.example.mindsafe.Fragments.ProfileFragment;
 import com.example.mindsafe.R;
+import com.example.mindsafe.helper.Parser;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.time.LocalDateTime;
 
 public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab_btn;
@@ -32,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        userExist();
          loadFragment(new HomeFragment());
          Dialog dialog=new Dialog(this);
         fab_btn=findViewById(R.id.fab_btn);
@@ -62,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+
     public void loadFragment(Fragment fragment){
         getSupportFragmentManager()
                 .beginTransaction()
@@ -82,5 +92,25 @@ public class MainActivity extends AppCompatActivity {
         ll_heading.setVisibility(VISIBLE);
         view_line.setVisibility(VISIBLE);
         super.onBackPressed();
+    }
+
+
+    private void userExist() {
+        SharedPreferences sp=getSharedPreferences("token",MODE_PRIVATE);
+
+        if (!sp.contains("jwt")){
+            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+        }
+        // If Time Limit is Up
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if(LocalDateTime.now().isAfter(Parser.dateTimeParser(sp.getString("timeLimit",null)))){
+                sp.edit().remove("jwt").commit();
+                sp.edit().remove("timeLimit").commit();
+                sp.edit().apply();
+                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                finish();
+            }
+        }
+
     }
 }
