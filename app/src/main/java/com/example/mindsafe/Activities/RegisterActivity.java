@@ -1,12 +1,14 @@
 package com.example.mindsafe.Activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -29,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText REmail;
    TextInputEditText RName;
    ProgressBar progressBar;
+   TextView goBack;
 
 
 
@@ -44,12 +47,19 @@ public class RegisterActivity extends AppCompatActivity {
         RPassword=findViewById(R.id.RPassword);
         REmail=findViewById(R.id.REmail);
         RName = findViewById(R.id.RName);
+        goBack=findViewById(R.id.Rgoback);
         progressBar=findViewById(R.id.RProgressBar);
 
         Button btnSignup = findViewById(R.id.btnSignup);
         btnSignup.setOnClickListener(v -> {
             RegisterUser();
         });
+
+        goBack.setOnClickListener(v -> {
+            Intent iRegister = new Intent(this, LoginActivity.class);
+            startActivity(iRegister);
+        });
+
 
     }
     public void RegisterUser(){
@@ -58,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
         String UserEmail= Objects.requireNonNull(REmail.getText()).toString();
         String UserName= Objects.requireNonNull(RName.getText()).toString();
 
-        RegisterRequestModel model=new RegisterRequestModel(UserEmail,UserPassword,UserName);
+
 
         if(UserEmail.isEmpty()){
             REmail.requestFocus();
@@ -77,6 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
             
         }
         else {
+            RegisterRequestModel model=new RegisterRequestModel(UserEmail,UserPassword,UserName);
 
             Call<APIResponseModel> call = PublicRetrofit.getInstance().getApi().Register(model);
             call.enqueue(new Callback<APIResponseModel>() {
@@ -86,7 +97,10 @@ public class RegisterActivity extends AppCompatActivity {
                     assert response.body() != null;
                     if(response.body().success){
                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(RegisterActivity.this, response.body().msg, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, response.body().msg, Toast.LENGTH_LONG).show();
+                        Intent i=new Intent(getApplicationContext(),OtpActivity.class);
+                        i.putExtra("email",UserEmail);
+                        startActivity(i);
                         } else {
                         progressBar.setVisibility(View.GONE);
                             Toast.makeText(RegisterActivity.this, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();

@@ -8,6 +8,7 @@ import com.example.mindsafe.requestModel.RegisterRequestModel;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface AuthApi {
 
@@ -26,7 +27,20 @@ public interface AuthApi {
     @POST("api/auth/login")
     Call<LoginResponseModel>Login(
             @Body LoginRequestModel model);
+
+    @POST("api/auth/confirm")
+    Call<APIResponseModel> confirmToken(
+            @Query("confirmationToken") String otp
+    );
+
+    @POST("api/auth/token/resend")
+    Call<APIResponseModel> reSend(
+            @Query("email") String email
+    );
+
 }
+
+
 
 
 

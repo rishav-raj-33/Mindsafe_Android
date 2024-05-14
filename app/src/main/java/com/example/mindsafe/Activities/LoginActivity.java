@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     TextInputEditText LEmail, LPassword;
 
     ProgressBar progressBar;
-    Intent iHome = new Intent(this, MainActivity.class);
+    Intent iHome;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         txt_create_account = findViewById(R.id.txt_create_account);
         progressBar=findViewById(R.id.RProgressBar);
         userExist();
+         iHome = new Intent(this, MainActivity.class);
         btnLogin.setOnClickListener(v -> {
             login();
 
@@ -118,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
     private void userExist() {
         SharedPreferences sp=getSharedPreferences("token",MODE_PRIVATE);
         if(sp.contains("jwt")){
+            iHome=new Intent(this,MainActivity.class);
             startActivity(iHome);
         }
     }
