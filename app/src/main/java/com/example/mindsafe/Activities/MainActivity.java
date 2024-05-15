@@ -27,6 +27,7 @@ import com.example.mindsafe.Fragments.ProfileFragment;
 import com.example.mindsafe.R;
 import com.example.mindsafe.RetrofitClients.PublicRetrofit;
 import com.example.mindsafe.RetrofitClients.SecureRetrofit;
+import com.example.mindsafe.helper.GetProfile;
 import com.example.mindsafe.helper.Parser;
 import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.responseModels.UserResponseModel;
@@ -148,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
 
                     progressBar.setVisibility(View.GONE);
-
+                    GetProfile.setEmail(response.body().getEmail());
+                    GetProfile.setName(response.body().getName());
+                    GetProfile.setId(response.body().getId());
                     setProfile_image(response.body().getProfilePhoto());
-
-
 
                 } else {
                     progressBar.setVisibility(View.GONE);
@@ -179,6 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
         String url="http://10.0.2.2:8080/api/auth/dp/"+img;
         Glide.with(this).load(url).into(profile_image);
+        GetProfile.setProfile(img);
+
     }
 
 
