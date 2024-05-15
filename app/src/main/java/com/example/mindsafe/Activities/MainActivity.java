@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -36,6 +38,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import okhttp3.Request;
 import retrofit2.Call;
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private MaterialButton btn_save,btn_cancel;
 
     private ProgressBar progressBar;
-    UserResponseModel responseModel;
+
 
 
 
@@ -60,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         progressBar=findViewById(R.id.RProgressBar);
-
          loadFragment(new HomeFragment());
          Dialog dialog=new Dialog(this);
         fab_btn=findViewById(R.id.fab_btn);
@@ -183,6 +185,9 @@ public class MainActivity extends AppCompatActivity {
         GetProfile.setProfile(img);
 
     }
+
+
+
 
 
 
