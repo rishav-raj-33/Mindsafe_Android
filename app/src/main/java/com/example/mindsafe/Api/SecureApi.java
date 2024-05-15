@@ -1,13 +1,17 @@
 package com.example.mindsafe.Api;
 
 import com.example.mindsafe.requestModel.LoginRequestModel;
+import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.responseModels.LoginResponseModel;
+import com.example.mindsafe.responseModels.UserResponseModel;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface SecureApi {
 
@@ -15,7 +19,8 @@ public interface SecureApi {
 
 
     @GET("api/auth/current-user/")
-    Call<LoginResponseModel> getLogdinUser();
+    Call<UserResponseModel> getLogdinUser();
+
 
 
 

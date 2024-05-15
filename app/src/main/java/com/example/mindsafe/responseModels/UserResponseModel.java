@@ -4,12 +4,7 @@ public class UserResponseModel {
     public UserResponseModel() {
     }
 
-    public UserResponseModel(int id, String email, String name, String profilePhoto) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.profilePhoto = profilePhoto;
-    }
+
 
     public int getId() {
         return id;
@@ -47,4 +42,22 @@ public class UserResponseModel {
     private String email;
     private String name;
     private String profilePhoto;
+
+    private boolean success;
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public UserResponseModel(int id, String email, String name, String profilePhoto, boolean success) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.profilePhoto = profilePhoto;
+        this.success = success;
+    }
 }

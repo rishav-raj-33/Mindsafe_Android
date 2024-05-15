@@ -17,7 +17,6 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import com.example.mindsafe.R;
 import com.example.mindsafe.RetrofitClients.PublicRetrofit;
-import com.example.mindsafe.helper.GetJwt;
 import com.example.mindsafe.requestModel.LoginRequestModel;
 import com.example.mindsafe.responseModels.LoginResponseModel;
 import com.google.android.material.textfield.TextInputEditText;
@@ -87,7 +86,6 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("timeLimit",response.body().expireDateTime.toString());
                         editor.commit();
                         editor.apply();
-                        GetJwt getJwt=new GetJwt(sp);
                         startActivity(iHome);
                         finish();
                     } else {

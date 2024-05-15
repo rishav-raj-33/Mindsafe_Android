@@ -5,9 +5,12 @@ import com.example.mindsafe.responseModels.LoginResponseModel;
 import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.requestModel.RegisterRequestModel;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface AuthApi {
@@ -37,6 +40,7 @@ public interface AuthApi {
     Call<APIResponseModel> reSend(
             @Query("email") String email
     );
+
 
 }
 

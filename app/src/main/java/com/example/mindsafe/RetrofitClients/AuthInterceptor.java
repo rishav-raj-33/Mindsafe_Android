@@ -8,7 +8,9 @@ import okhttp3.Response;
 
 public class AuthInterceptor implements Interceptor {
 
-    private final String token;
+
+
+    public  final String token;
 
     public AuthInterceptor(String token) {
         this.token = token;
@@ -23,4 +25,7 @@ public class AuthInterceptor implements Interceptor {
                 .build();
         return chain.proceed(newRequest);
     }
+
+
+
 }
