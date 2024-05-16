@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Welcome Back"
+            android:textColor="@color/black"
             android:textSize="40sp"
             android:textStyle="bold"
             />
@@ -27,6 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textColor="@color/black"
             android:text="Sign up for new user"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -44,6 +46,7 @@
                 android:textColorHint="@color/black"
                 android:layout_width="match_parent"
                 android:id="@+id/LEmail"
+                android:textColor="@color/black"
                 android:layout_height="wrap_content"
                 android:hint="Email Address" />
 
@@ -58,6 +61,7 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:textColorHint="@color/black"
                 android:id="@+id/LPassword"
                 android:hint="Password" />
@@ -69,6 +73,7 @@
             android:text="Forgot Password?"
             android:textSize="15sp"
             android:id="@+id/ForgotPassword"
+            android:textColor="@color/black"
             android:textStyle="bold" />
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="match_parent"
@@ -87,6 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
+            android:textColor="@color/black"
             android:text="Or"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -96,6 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
+            android:textColor="@color/black"
             android:text="Not having an account? "
             android:textSize="18sp" />
         <TextView
@@ -103,6 +110,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
+            android:textColor="@color/black"
             android:text="Create Account...."
             android:textStyle="bold"
             android:id="@+id/txt_create_account"
@@ -115,6 +123,16 @@
             android:id="@+id/RProgressBar"
             android:layout_gravity="center"
             android:visibility="invisible"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:text="Forget Password coming soon......."
+            android:textSize="18sp"
+             />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

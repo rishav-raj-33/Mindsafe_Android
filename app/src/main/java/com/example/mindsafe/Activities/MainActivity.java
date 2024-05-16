@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setProfile_image(String img){
 
-        String url="http://10.0.2.2:8080/api/auth/dp/"+img;
+        String url="http://192.168.172.23:8080/api/auth/dp/"+img;
         Glide.with(this).load(url).into(profile_image);
         GetProfile.setProfile(img);
 
