@@ -119,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
         if(sp.contains("jwt")){
             iHome=new Intent(this,MainActivity.class);
             startActivity(iHome);
+            finish();
         }
     }
 

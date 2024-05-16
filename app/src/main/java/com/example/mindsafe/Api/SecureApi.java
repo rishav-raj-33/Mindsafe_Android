@@ -1,5 +1,6 @@
 package com.example.mindsafe.Api;
 
+import com.example.mindsafe.helper.ImageRequestBody;
 import com.example.mindsafe.requestModel.LoginRequestModel;
 import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.responseModels.LoginResponseModel;
@@ -8,6 +9,7 @@ import com.example.mindsafe.responseModels.UserResponseModel;
 import java.io.File;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -28,7 +30,10 @@ public interface SecureApi {
     Call<UserResponseModel> getLogdinUser();
 
 @POST("api/user/dp/upload/{id}")
-    Call<APIResponseModel> upload(@Path("id") int id, @Query("image")File file);
+@Multipart
+    Call<APIResponseModel> upload(@Path("id") int id, @Part("image\"; filename=\"image.jpg\"") RequestBody image);
+
+
 
 
 @DELETE("api/user/{id}")

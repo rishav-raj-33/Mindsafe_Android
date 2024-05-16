@@ -2,7 +2,9 @@ package com.example.mindsafe.Activities;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+
 import okhttp3.OkHttpClient;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,71 +49,75 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab_btn;
-    private ImageView profile_image;
+    public ImageView profile_image;
     private LinearLayout ll_heading;
     private View view_line;
-    private MaterialButton btn_save,btn_cancel;
+    private MaterialButton btn_save, btn_cancel;
 
     private ProgressBar progressBar;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        progressBar=findViewById(R.id.RProgressBar);
-         loadFragment(new HomeFragment());
-         Dialog dialog=new Dialog(this);
-        fab_btn=findViewById(R.id.fab_btn);
-        profile_image=findViewById(R.id.profile_image);
-        ll_heading=findViewById(R.id.ll_heading);
-        view_line=findViewById(R.id.view_line);
+        Log.d("HII", "AA gye hum");
+        progressBar = findViewById(R.id.RProgressBar);
+        loadFragment(new HomeFragment());
+        Dialog dialog = new Dialog(this);
+        fab_btn = findViewById(R.id.fab_btn);
+        profile_image = findViewById(R.id.profile_image);
+        ll_heading = findViewById(R.id.ll_heading);
+        view_line = findViewById(R.id.view_line);
         userExist();
         getUser();
-        profile_image.setOnClickListener(view->{
-            loadFragment(new ProfileFragment());
+        profile_image.setOnClickListener(view -> {
+            loadFragment(new ProfileFragment(MainActivity.this));
             fab_btn.setVisibility(GONE);
             ll_heading.setVisibility(GONE);
             view_line.setVisibility(GONE);
         });
-        fab_btn.setOnClickListener(view->{
-          dialog.setContentView(R.layout.add_password_dialogbox);
-          dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        fab_btn.setOnClickListener(view -> {
+            dialog.setContentView(R.layout.add_password_dialogbox);
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog.setCancelable(false);
             dialog.getWindow().getAttributes();
-            btn_save=dialog.findViewById(R.id.btn_save);
-            btn_cancel=dialog.findViewById(R.id.btn_cancel);
-            btn_cancel.setOnClickListener(v->{
-               dialog.dismiss();
+            btn_save = dialog.findViewById(R.id.btn_save);
+            btn_cancel = dialog.findViewById(R.id.btn_cancel);
+            btn_cancel.setOnClickListener(v -> {
+                dialog.dismiss();
             });
-  dialog.show();
-  
+            dialog.show();
+
 
         });
 
     }
 
+    public void restart(){
+        onRestart();
+    }
 
 
-    public void loadFragment(Fragment fragment){
+    public void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.container,fragment)
+                .add(R.id.container, fragment)
                 .addToBackStack(null)
                 .commit();
 
+
     }
-    public void loadedFragment(Fragment fragment){
+
+    public void loadedFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.container,fragment)
+                .add(R.id.container, fragment)
                 .commit();
 
     }
-    public void onBackPressed(){
+
+    public void onBackPressed() {
         fab_btn.setVisibility(VISIBLE);
         ll_heading.setVisibility(VISIBLE);
         view_line.setVisibility(VISIBLE);
@@ -120,41 +126,42 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void userExist() {
-        SharedPreferences sp=getSharedPreferences("token",MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences("token", MODE_PRIVATE);
 
-        if (!sp.contains("jwt")){
-            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+        if (!sp.contains("jwt")) {
+            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         }
         // If Time Limit is Up
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if(LocalDateTime.now().isAfter(Parser.dateTimeParser(sp.getString("timeLimit",null)))){
+            if (LocalDateTime.now().isAfter(Parser.dateTimeParser(sp.getString("timeLimit", null)))) {
                 sp.edit().remove("jwt").commit();
                 sp.edit().remove("timeLimit").commit();
                 sp.edit().apply();
-                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finish();
             }
         }
 
     }
 
-    private void getUser(){
+    public void getUser() {
 
         progressBar.setVisibility(View.VISIBLE);
-        SharedPreferences sp=getSharedPreferences("token",MODE_PRIVATE);
-        Call<UserResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt",null)).getApi().getLogdinUser();
+        SharedPreferences sp = getSharedPreferences("token", MODE_PRIVATE);
+        Call<UserResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().getLogdinUser();
         call.enqueue(new Callback<UserResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<UserResponseModel> call, @NonNull Response<UserResponseModel> response) {
 
                 assert response.body() != null;
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
 
                     progressBar.setVisibility(View.GONE);
                     GetProfile.setEmail(response.body().getEmail());
                     GetProfile.setName(response.body().getName());
                     GetProfile.setId(response.body().getId());
-                    setProfile_image(response.body().getProfilePhoto());
+                    GetProfile.setProfile(response.body().getProfilePhoto());
+                    setProfile_image(GetProfile.getProfile());
 
                 } else {
                     progressBar.setVisibility(View.GONE);
@@ -173,31 +180,19 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // This is a non-network error, handle accordingly
                     Toast.makeText(MainActivity.this, "MainActivity Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                }}
+                }
+            }
         });
 
     }
 
-    public void setProfile_image(String img){
+    public void setProfile_image(String img) {
 
-        String url="http://192.168.172.23:8080/api/auth/dp/"+img;
+        String url = "http://192.168.172.23:8080/api/auth/dp/" + img;
         Glide.with(this).load(url).into(profile_image);
         GetProfile.setProfile(img);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -37,6 +37,7 @@ import com.example.mindsafe.Activities.MainActivity;
 import com.example.mindsafe.R;
 import com.example.mindsafe.RetrofitClients.SecureRetrofit;
 import com.example.mindsafe.helper.GetProfile;
+import com.example.mindsafe.helper.ImageRequestBody;
 import com.example.mindsafe.helper.RealPathUtil;
 import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.responseModels.UserResponseModel;
@@ -65,10 +66,12 @@ public class ProfileFragment extends Fragment {
     androidx.appcompat.widget.Toolbar toolbar;
 
 
+MainActivity mainActivity;
 
 
-    public ProfileFragment() {
+    public ProfileFragment(MainActivity activity) {
         // Required empty public constructor
+        this.mainActivity = activity;
     }
 
 
@@ -131,8 +134,10 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             Uri selectedImageUri = data.getData();
             String realPath = RealPathUtil.getRealPath(requireContext(), selectedImageUri);
 
-                File image=new File(realPath);
+            assert realPath != null;
+            File image=new File(realPath);
                    upload(image);
+
         }
     }
 
@@ -142,7 +147,9 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
     public void upload(File image){
         progressBar.setVisibility(View.VISIBLE);
         SharedPreferences sp= requireContext().getSharedPreferences("token",Context.MODE_PRIVATE);
-        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt",null)).getApi().upload(GetProfile.getId(),image);
+        RequestBody imageRequestBody=ImageRequestBody.createImageRequestBody(image);
+        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt",null)).getApi().upload(GetProfile.getId(),imageRequestBody);
+        Log.e("reach","message");
         call.enqueue(new Callback<APIResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<APIResponseModel> call, @NonNull Response<APIResponseModel> response) {
@@ -150,9 +157,13 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
                 assert response.body() != null;
                 if(response.isSuccessful()){
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(requireContext(), response.body().msg, Toast.LENGTH_SHORT).show();
+                    GetProfile.setProfile(response.body().msg);
 
-
+                    Toast.makeText(requireContext(),"File Uploaded.....", Toast.LENGTH_SHORT).show();
+                    String url="http://192.168.172.23:8080/api/auth/dp/"+ GetProfile.getProfile();
+                    Glide.with(requireContext()).load(url).into(UProfile);
+                    Glide.with(requireContext()).load(url).into(mainActivity.profile_image);
+                    Uname.setText(GetProfile.getName());
 
                 } else {
                     progressBar.setVisibility(View.GONE);
@@ -173,15 +184,6 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
                     Toast.makeText(requireContext(), "Profile Fragment Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 }}
         });
-
-
-
-
-
-
-
-
-
     }
 
 
@@ -224,19 +226,7 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
                     Toast.makeText(requireContext(), "Profile Fragment Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                 }}
         });
-
-
-
-
-
-
     }
-
-
-
-
-
-
 
 }
 
