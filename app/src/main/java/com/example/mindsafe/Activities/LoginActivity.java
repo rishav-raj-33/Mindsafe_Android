@@ -58,6 +58,11 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(iRegister);
         });
 
+        ForgotPassword.setOnClickListener(v-> {
+            forgetPassword();
+            Toast.makeText(LoginActivity.this, "Forget Password coming soon.......", Toast.LENGTH_SHORT).show();
+        });
+
 
     }
 
@@ -121,6 +126,13 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(iHome);
             finish();
         }
+    }
+
+
+
+    //TODO: Backend Feature need to be added
+    public void forgetPassword(){
+
     }
 
 

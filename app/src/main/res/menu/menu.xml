@@ -4,8 +4,8 @@
     <item android:title="Logout"
         android:id="@+id/logout"
        />
-    <item android:title="Dismiss"
-        android:id="@+id/dismiss"
+    <item android:title="Disable Account"
+        android:id="@+id/disable"
       />
 
 </menu>

@@ -90,7 +90,7 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
         if (id==R.id.logout){
             logout();
         }
-        else if (id==R.id.dismiss){
+        else if (id==R.id.disable){
             disableUser();
 
         }
