@@ -148,7 +148,7 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
         progressBar.setVisibility(View.VISIBLE);
         SharedPreferences sp= requireContext().getSharedPreferences("token",Context.MODE_PRIVATE);
         RequestBody imageRequestBody=ImageRequestBody.createImageRequestBody(image);
-        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt",null)).getApi().upload(GetProfile.getId(),imageRequestBody);
+        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt",null)).getApi().upload(sp.getInt("userId",0),imageRequestBody);
         Log.e("reach","message");
         call.enqueue(new Callback<APIResponseModel>() {
             @Override
@@ -191,6 +191,7 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
         SharedPreferences sp= requireContext().getSharedPreferences("token",Context.MODE_PRIVATE);
         sp.edit().remove("jwt").commit();
         sp.edit().remove("timeLimit").commit();
+        sp.edit().remove("id").commit();
         sp.edit().apply();
         startActivity(new Intent(requireContext(), LoginActivity.class));
     }
@@ -198,7 +199,7 @@ toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
     public void disableUser(){
 
         SharedPreferences sp= requireContext().getSharedPreferences("token",Context.MODE_PRIVATE);
-        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt",null)).getApi().deleteUser(GetProfile.getId());
+        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt",null)).getApi().deleteUser(sp.getInt("userId",0));
         call.enqueue(new Callback<APIResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<APIResponseModel> call, @NonNull Response<APIResponseModel> response) {

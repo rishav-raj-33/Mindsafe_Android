@@ -51,14 +51,13 @@ public interface SecureApi {
 @DELETE("api/key/{id}")
     Call<APIResponseModel> deleteKey(@Path("id") int id);
 
-@GET("api/key/{id}")
-    Call<KeyVaultResponseModel> viewKey(@Path("id") int id);
+
 
 @PUT("api/key/{id}")
     Call<KeyVaultResponseModel> updateKey(@Path("id") int id,@Body keyVaultRequestModel model);
 
 @GET("api/key/user/{id}")
-    Call<KeyPageResponse>  getAllKeys(@Path("id") int id);
+    Call<List<KeyVaultResponseModel>>  getAllKeys(@Path("id") int id);
 
 
 }

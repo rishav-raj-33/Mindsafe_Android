@@ -19,6 +19,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.mindsafe.Fragments.HomeFragment;
@@ -26,8 +27,11 @@ import com.example.mindsafe.Fragments.ProfileFragment;
 import com.example.mindsafe.R;
 import com.example.mindsafe.RetrofitClients.SecureRetrofit;
 import com.example.mindsafe.helper.GetProfile;
+import com.example.mindsafe.helper.GlobalData;
 import com.example.mindsafe.helper.Parser;
 import com.example.mindsafe.requestModel.keyVaultRequestModel;
+import com.example.mindsafe.responseModels.APIResponseModel;
+import com.example.mindsafe.responseModels.KeyPageResponse;
 import com.example.mindsafe.responseModels.KeyVaultResponseModel;
 import com.example.mindsafe.responseModels.UserResponseModel;
 import com.google.android.material.button.MaterialButton;
@@ -36,6 +40,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import okhttp3.Request;
@@ -52,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
 
+
+
     private EditText editText,passwordKey,userIdkey;
 
     @Override
@@ -59,9 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        Log.d("HII", "AA gye hum");
         progressBar = findViewById(R.id.RProgressBar);
-        loadFragment(new HomeFragment());
         Dialog dialog = new Dialog(this);
         fab_btn = findViewById(R.id.fab_btn);
         profile_image = findViewById(R.id.profile_image);
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         view_line = findViewById(R.id.view_line);
         userExist();
         getUser();
+        getKeyList();
         profile_image.setOnClickListener(view -> {
             loadFragment(new ProfileFragment(MainActivity.this));
             fab_btn.setVisibility(GONE);
@@ -77,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
         });
         fab_btn.setOnClickListener(view -> {
             dialog.setContentView(R.layout.add_password_dialogbox);
-            editText=findViewById(R.id.note);
-            passwordKey =findViewById(R.id.keypassword);
-            userIdkey=findViewById(R.id.userName);
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             dialog.setCancelable(false);
             dialog.getWindow().getAttributes();
@@ -90,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
             });
             btn_save.setOnClickListener(v -> {
 
+                editText=dialog.findViewById(R.id.note);
+                passwordKey =dialog.findViewById(R.id.keypassword);
+                userIdkey=dialog.findViewById(R.id.userName);
                 savePassword();
             });
 
@@ -97,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         });
-
 
     }
 
@@ -117,13 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void loadedFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, fragment)
-                .commit();
 
-    }
 
     public void onBackPressed() {
         fab_btn.setVisibility(VISIBLE);
@@ -144,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
             if (LocalDateTime.now().isAfter(Parser.dateTimeParser(sp.getString("timeLimit", null)))) {
                 sp.edit().remove("jwt").commit();
                 sp.edit().remove("timeLimit").commit();
+                sp.edit().remove("id").commit();
                 sp.edit().apply();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finish();
@@ -203,10 +203,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //TODO: save Password Feature
 
     public void savePassword() {
+
+
         String keyUserName = Objects.requireNonNull(userIdkey.getText()).toString();
+
          String keyPassword = Objects.requireNonNull(passwordKey.getText()).toString();
         String keyNotes = Objects.requireNonNull(editText.getText()).toString();
         if(keyUserName.isEmpty()){
@@ -214,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
             userIdkey.setError("user name is required");
             return;
         }
+
         if(keyPassword.isEmpty()){
             passwordKey.requestFocus();
             passwordKey.setError("password is required");
@@ -225,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-
+       Log.e("testing","pass2");
         if (keyUserName.isEmpty() || keyPassword.isEmpty() || keyNotes.isEmpty()) {
                userIdkey.setError("Email Password and Id are required");
              userIdkey.requestFocus();
@@ -234,15 +237,21 @@ public class MainActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
             keyVaultRequestModel model=new keyVaultRequestModel(keyUserName,keyPassword,keyNotes);
             SharedPreferences sp = getSharedPreferences("token", MODE_PRIVATE);
-            Call<KeyVaultResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().addKey(GetProfile.getId(),model);
+
+            Call<KeyVaultResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().addKey(sp.getInt("userId",0),model);
             call.enqueue(new Callback<KeyVaultResponseModel>() {
                 @Override
                 public void onResponse(@NonNull Call<KeyVaultResponseModel> call, @NonNull Response<KeyVaultResponseModel> response) {
 
                     assert response.body() != null;
-                    if (response.body().getNotes() != null) {
+                    int statusCode=response.code();
+                    if (statusCode==201) {
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(MainActivity.this, "Key Added.....", Toast.LENGTH_SHORT).show();
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+
                     } else {
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(MainActivity.this, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
@@ -268,4 +277,57 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-}
+
+
+    public void getKeyList() {
+
+
+        SharedPreferences sp = getSharedPreferences("token", MODE_PRIVATE);
+        Call<List<KeyVaultResponseModel>> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().getAllKeys(sp.getInt("userId",0));
+
+
+
+        call.enqueue(new Callback<List<KeyVaultResponseModel>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<KeyVaultResponseModel>> call, @NonNull Response<List<KeyVaultResponseModel>> response) {
+                assert response.body() != null;
+                int statusCode = response.code();
+                loadFragment(new HomeFragment());
+                if (statusCode == 200) {
+                    List<KeyVaultResponseModel> list=response.body();
+                    //  progressBar.setVisibility(View.GONE);
+
+                    GlobalData.setGlobalList(list);
+                    Toast.makeText(MainActivity.this, "Fetching.....", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    //   progressBar.setVisibility(View.GONE);
+                    Toast.makeText(MainActivity.this, "Fetching Failed....", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<KeyVaultResponseModel>> call, @NonNull Throwable throwable) {
+                //  progressBar.setVisibility(View.GONE);
+                Log.e("MainActivity", "MainActivity failed", throwable);
+                if (throwable instanceof IOException) {
+                    // This is a network error, handle accordingly
+                    Toast.makeText(MainActivity.this, "Network error occurred", Toast.LENGTH_SHORT).show();
+                } else {
+                    // This is a non-network error, handle accordingly
+                    Toast.makeText(MainActivity.this, "MainActivity Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+    }
+
+
+    }
+
+
+
+
+

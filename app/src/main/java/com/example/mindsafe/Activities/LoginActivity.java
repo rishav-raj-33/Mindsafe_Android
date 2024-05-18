@@ -89,6 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString("jwt", response.body().jwtToken);
                         editor.putString("timeLimit",response.body().expireDateTime.toString());
+                        editor.putInt("userId",response.body().id);
                         editor.commit();
                         editor.apply();
                         startActivity(iHome);

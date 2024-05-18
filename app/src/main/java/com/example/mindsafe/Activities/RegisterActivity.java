@@ -1,6 +1,7 @@
 package com.example.mindsafe.Activities;
 
 import android.annotation.SuppressLint;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,10 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
+
 import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.R;
 import com.example.mindsafe.RetrofitClients.PublicRetrofit;
@@ -101,6 +106,14 @@ public class RegisterActivity extends AppCompatActivity {
                         Intent i=new Intent(getApplicationContext(),OtpActivity.class);
                         i.putExtra("email",UserEmail);
                         startActivity(i);
+                        finish();
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        Fragment fragment = fragmentManager.findFragmentById(R.id.container);
+                        assert fragment != null;
+                        fragmentManager.beginTransaction()
+                                .detach(fragment)
+                                .attach(fragment)
+                                .commit();
                         } else {
                         progressBar.setVisibility(View.GONE);
                             Toast.makeText(RegisterActivity.this, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();

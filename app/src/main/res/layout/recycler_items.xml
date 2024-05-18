@@ -41,14 +41,21 @@
                 android:id="@+id/Password"
                 android:textStyle="bold"
                 android:textColor="@color/lightsky" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"
-                android:layout_marginTop="10dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:id="@+id/keyid"
+                android:visibility="invisible"
+                android:textStyle="bold"
+                android:textColor="@color/lightsky" />
 
         </LinearLayout>
+
+
     </androidx.cardview.widget.CardView>
+
+
 
 
 </LinearLayout>

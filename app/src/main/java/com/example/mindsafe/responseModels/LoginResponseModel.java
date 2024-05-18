@@ -7,6 +7,24 @@ public class LoginResponseModel {
     public String jwtToken,userName;
     public boolean success;
 
+    public int id;
+
+    public LoginResponseModel(String jwtToken, String userName, boolean success, int id, String expireDateTime) {
+        this.jwtToken = jwtToken;
+        this.userName = userName;
+        this.success = success;
+        this.id = id;
+        this.expireDateTime = expireDateTime;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String expireDateTime;
 
     public String  getExpireDateTime() {
@@ -25,12 +43,7 @@ public class LoginResponseModel {
         this.success = success;
     }
 
-    public LoginResponseModel(String jwtToken, String userName, boolean success,String expireDateTime) {
-        this.jwtToken = jwtToken;
-        this.userName = userName;
-        this.success=success;
-        this.expireDateTime=expireDateTime;
-    }
+
 
     public LoginResponseModel() {
     }
