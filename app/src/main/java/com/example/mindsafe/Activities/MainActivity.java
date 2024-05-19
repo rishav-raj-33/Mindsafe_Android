@@ -335,6 +335,8 @@ public class MainActivity extends AppCompatActivity {
     public void fingerPrint(boolean flag) {
 
 
+
+
         if (flag) {
          //   relativeLayout.setVisibility(View.INVISIBLE);
 
@@ -359,12 +361,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                     super.onAuthenticationError(errorCode, errString);
-                  //  relativeLayout.setVisibility(VISIBLE);
+
                 }
 
                 @Override
                 public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                     super.onAuthenticationSucceeded(result);
+                    relativeLayout.setVisibility(VISIBLE);
                 }
 
                 @Override

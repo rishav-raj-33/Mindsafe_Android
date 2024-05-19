@@ -43,8 +43,6 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:latest_version")
     implementation ("androidx.biometric:biometric:1.1.0")
 
-
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

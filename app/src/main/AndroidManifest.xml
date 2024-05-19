@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.Blur_effect"
+            android:exported="false" />
+        <activity
             android:name=".Activities.OtpActivity"
             android:exported="false" />
         <activity
