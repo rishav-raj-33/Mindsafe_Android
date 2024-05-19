@@ -36,10 +36,11 @@ public class HomeFragment extends Fragment {
 
 
 
+  MainActivity activity;
 
 
-
-    public HomeFragment() {
+    public HomeFragment(MainActivity activity) {
+        this.activity=activity;
 
     }
     @SuppressLint("MissingInflatedId")
@@ -49,7 +50,7 @@ public class HomeFragment extends Fragment {
         View view=inflater.inflate(R.layout.fragment_home, container, false);
          RecyclerView recyclerView;
         recyclerView=view.findViewById(R.id.recycle);
-        HomeItemAdapter homeItemAdapter=new HomeItemAdapter();
+        HomeItemAdapter homeItemAdapter=new HomeItemAdapter(activity);
         recyclerView.setAdapter(homeItemAdapter);
         return view;
     }

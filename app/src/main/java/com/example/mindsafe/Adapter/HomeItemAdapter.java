@@ -2,17 +2,23 @@ package com.example.mindsafe.Adapter;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.provider.ContactsContract;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mindsafe.Activities.MainActivity;
@@ -24,10 +30,13 @@ import com.example.mindsafe.requestModel.keyVaultRequestModel;
 import com.example.mindsafe.responseModels.APIResponseModel;
 import com.example.mindsafe.responseModels.KeyPageResponse;
 import com.example.mindsafe.responseModels.KeyVaultResponseModel;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executor;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,14 +46,20 @@ public class HomeItemAdapter extends RecyclerView.Adapter<HomeItemAdapter.ViewHo
 
 
 
+  private    List<KeyVaultResponseModel> list;
+
+  private MainActivity mainActivity;
 
 
 
 
-    public HomeItemAdapter() {
 
 
 
+    public HomeItemAdapter(MainActivity activity) {
+
+list=GlobalData.getGlobalList();
+this.mainActivity=activity;
 
     }
 
@@ -57,23 +72,48 @@ public class HomeItemAdapter extends RecyclerView.Adapter<HomeItemAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HomeItemAdapter.ViewHolder holder, int position) {
-        KeyVaultResponseModel keyVaultResponseModel = GlobalData.getGlobalList().get(position);
-        holder.Note.setText("Notes: "+keyVaultResponseModel.getNotes());
-        holder.UserId.setText("User Name: "+keyVaultResponseModel.getUserName());
-        holder.Password.setText("Password: "+keyVaultResponseModel.getPassword());
+    public void onBindViewHolder(@NonNull HomeItemAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        KeyVaultResponseModel keyVaultResponseModel = list.get(position);
+        holder.Note.setText(keyVaultResponseModel.getNotes());
+        holder.UserId.setText(keyVaultResponseModel.getUserName());
+        holder.Password.setText(keyVaultResponseModel.getPassword());
         holder.keyId.setText(String.valueOf(keyVaultResponseModel.getId()));
+
+
+
+
+        holder.imgDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int id=Integer.parseInt(holder.keyId.getText().toString());
+              deleteKey(id);
+              mainActivity.refresh();
+            }
+        });
+
+        holder.imgUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                keyVaultRequestModel model=new keyVaultRequestModel(Objects.requireNonNull(holder.UserId.getText()).toString(), Objects.requireNonNull(holder.Password.getText()).toString(), Objects.requireNonNull(holder.Note.getText()).toString());
+                updateKey(Integer.parseInt(holder.keyId.getText().toString()),model);
+                mainActivity.refresh();
+            }
+        });
 
     }
 
     @Override
     public int getItemCount() {
-        return GlobalData.getGlobalList().size();
+        return list.size();
 
     }
 
+
+
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView UserId, Password, Note, keyId;
+        TextInputEditText UserId, Password, Note;
+        TextView keyId;
+        ImageView imgDelete,imgUpdate;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,97 +121,103 @@ public class HomeItemAdapter extends RecyclerView.Adapter<HomeItemAdapter.ViewHo
             Password = itemView.findViewById(R.id.Password);
             Note = itemView.findViewById(R.id.Note);
             keyId = itemView.findViewById(R.id.keyid);
+            Password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                imgDelete=itemView.findViewById(R.id.imgDelete);
+            imgUpdate=itemView.findViewById(R.id.imgUpdate);
         }
+
+
     }
 
 
-    // Delete Password Feature (Logic Completed Integration pending....)
-    //TODO: Refresh Fragment after successful API hit
-//    public void deleteKey() {
-//
-//        // String getId= Objects.requireNonNull(?.getText()).toString();
-//
-//        //  progressBar.setVisibility(View.VISIBLE);
-//
-//        SharedPreferences sp = activity.getSharedPreferences("token", MODE_PRIVATE);
-//        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().deleteKey(1); //change (getId)
-//        call.enqueue(new Callback<APIResponseModel>() {
-//            @Override
-//            public void onResponse(@NonNull Call<APIResponseModel> call, @NonNull Response<APIResponseModel> response) {
-//
-//                assert response.body() != null;
-//                if (response.body().success) {
-//                    //  progressBar.setVisibility(View.GONE);
-//                    Toast.makeText(activity, response.body().msg, Toast.LENGTH_SHORT).show();
-//                } else {
-//                    //   progressBar.setVisibility(View.GONE);
-//                    Toast.makeText(activity, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<APIResponseModel> call, @NonNull Throwable throwable) {
-//                //  progressBar.setVisibility(View.GONE);
-//                Log.e("MainActivity", "MainActivity failed", throwable);
-//                if (throwable instanceof IOException) {
-//                    // This is a network error, handle accordingly
-//                    Toast.makeText(activity, "Network error occurred", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    // This is a non-network error, handle accordingly
-//                    Toast.makeText(activity, "MainActivity Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//
-//    }
-//
-//    // Logic completed Integration pendng.....
-//    //TODO: Refresh Fragment after successful API hit
-//
-//    public void updateKey() {
-//        //   progressBar.setVisibility(View.VISIBLE);
-//        // String getId= Objects.requireNonNull(?.getText()).toString();
-//        // String keyUserName = Objects.requireNonNull(?.getText()).toString();
-//        //  String keyPassword = Objects.requireNonNull(?.getText()).toString();
-//        // String keyNotes = Objects.requireNonNull(?.getText()).toString();
-//
-//        //  keyVaultRequestModel model=new keyVaultRequestModel(keyUserName,keyPassword,keyNotes);
-//
-//        SharedPreferences sp = activity.getSharedPreferences("token", MODE_PRIVATE);
-//        Call<KeyVaultResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().updateKey(1, new keyVaultRequestModel());  //change id and model
-//        call.enqueue(new Callback<KeyVaultResponseModel>() {
-//            @Override
-//            public void onResponse(@NonNull Call<KeyVaultResponseModel> call, @NonNull Response<KeyVaultResponseModel> response) {
-//
-//                assert response.body() != null;
-//                int statusCode = response.code();
-//                if (statusCode == 202) {
-//                    //   progressBar.setVisibility(View.GONE);
-//                    Toast.makeText(activity, "updated....", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    //  progressBar.setVisibility(View.GONE);
-//                    Toast.makeText(activity, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<KeyVaultResponseModel> call, @NonNull Throwable throwable) {
-//                // progressBar.setVisibility(View.GONE);
-//                Log.e("MainActivity", "MainActivity failed", throwable);
-//                if (throwable instanceof IOException) {
-//                    // This is a network error, handle accordingly
-//                    Toast.makeText(activity, "Network error occurred", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    // This is a non-network error, handle accordingly
-//                    Toast.makeText(activity, "MainActivity Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//
-//
-//    }
 
 
-}
+
+
+    public void deleteKey(int id) {
+
+
+        mainActivity.progressBar.setVisibility(View.VISIBLE);
+
+        SharedPreferences sp = mainActivity.getSharedPreferences("token", MODE_PRIVATE);
+        Call<APIResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().deleteKey(id);
+        call.enqueue(new Callback<APIResponseModel>() {
+            @Override
+            public void onResponse(@NonNull Call<APIResponseModel> call, @NonNull Response<APIResponseModel> response) {
+
+                assert response.body() != null;
+                if (response.body().success) {
+                    mainActivity.progressBar.setVisibility(View.GONE);
+                    Toast.makeText(mainActivity, response.body().msg, Toast.LENGTH_SHORT).show();
+                } else {
+                    mainActivity.progressBar.setVisibility(View.GONE);
+                    Toast.makeText(mainActivity, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<APIResponseModel> call, @NonNull Throwable throwable) {
+                mainActivity.progressBar.setVisibility(View.GONE);
+                Log.e("MainActivity", "MainActivity failed", throwable);
+                if (throwable instanceof IOException) {
+                    // This is a network error, handle accordingly
+                    Toast.makeText(mainActivity, "Network error occurred", Toast.LENGTH_SHORT).show();
+                } else {
+                    // This is a non-network error, handle accordingly
+                    Toast.makeText(mainActivity, "MainActivity Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
+
+
+    public void updateKey(int id,keyVaultRequestModel model) {
+        mainActivity.progressBar.setVisibility(View.VISIBLE);
+        SharedPreferences sp = mainActivity.getSharedPreferences("token", MODE_PRIVATE);
+        Call<KeyVaultResponseModel> call = SecureRetrofit.getInstance(sp.getString("jwt", null)).getApi().updateKey(id, model);
+        call.enqueue(new Callback<KeyVaultResponseModel>() {
+            @Override
+            public void onResponse(@NonNull Call<KeyVaultResponseModel> call, @NonNull Response<KeyVaultResponseModel> response) {
+
+                assert response.body() != null;
+                int statusCode = response.code();
+                if (statusCode == 202) {
+                    mainActivity.progressBar.setVisibility(View.GONE);
+                    Toast.makeText(mainActivity, "updated....", Toast.LENGTH_SHORT).show();
+                } else {
+                    mainActivity.progressBar.setVisibility(View.GONE);
+                    Toast.makeText(mainActivity, "Unexpected Problem Occurred", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<KeyVaultResponseModel> call, @NonNull Throwable throwable) {
+                mainActivity.progressBar.setVisibility(View.GONE);
+                Log.e("MainActivity", "MainActivity failed", throwable);
+                if (throwable instanceof IOException) {
+                    // This is a network error, handle accordingly
+                    Toast.makeText(mainActivity, "Network error occurred", Toast.LENGTH_SHORT).show();
+                } else {
+                    // This is a non-network error, handle accordingly
+                    Toast.makeText(mainActivity, "MainActivity Issue: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+    }
+
+
+
+
+    }
+
+
+
+
+
+
